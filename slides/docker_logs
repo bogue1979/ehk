@@ -1,0 +1,15 @@
+
+Usage:  docker logs [OPTIONS] CONTAINER
+
+Fetch the logs of a container
+
+  -f, --follow        Follow log output
+  --help              Print usage
+  --since             Show logs since timestamp
+  -t, --timestamps    Show timestamps
+  --tail=all          Number of lines to show from the end of the logs
+
+docker logs --tail 2 kibana
+192.168.101.1 - kibana [17/Feb/2016:07:09:52 +0000] "GET /logstash-2016.02.17/_mapping/field/@fields.HOSTNAME HTTP/1.1" 200 255 "http://localhost/index.html" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36" "-"
+192.168.101.1 - kibana [17/Feb/2016:07:09:53 +0000] "GET /logstash-2016.02.17/_mapping/field/@fields.HOSTNAME HTTP/1.1" 200 255 "http://localhost/index.html" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36" "-"
+192.168.101.1 - kibana [17/Feb/2016:07:10:06 +0000] "POST /logstash-2016.02.17/_search HTTP/1.1" 200 674526 "http://localhost/index.html" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36" "-"

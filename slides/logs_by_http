@@ -1,0 +1,7 @@
+docker pull bogue1979/docker_logs_by_http
+docker run -v /var/run/docker.sock:/var/run/docker.sock \
+  -p 7000:8080 \
+  --name docker-logs \
+  bogue1979/docker_logs_by_http
+
+curl localhost:7000/containers/4fa6e0f0c678/logs?stderr=1&stdout=1&timestamps=1&tail=10

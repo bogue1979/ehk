@@ -1,0 +1,77 @@
+Docker Logs Centralized
+Elasticsearch Heka Kibana
+15:04 25 Feb 2016
+Tags: docker, elasticsearch, kibana, heka
+
+Daniel Rossbach
+Operation Automation Engineer, Meteogroup
+daniel.rossbach@meteogroup.com
+http://meteogroup.com/
+
+* Current movement @ Meteogroup
+
+.image ./docker_all_the_things.jpg
+
+
+* Best practices with docker and resulting problems
+
+- Run one process inside container
+- no SSH
+- changing configuration means redeploy
+- data inside container is lost
+- no easy way to get logfiles out of container
+- except STDOUT and STDERR
+
+
+* Docker logs command
+
+.code docker_logs
+
+* First approach
+
+.code logs_by_http
+
+Small container currently running on every docker host in MeteoGroup and exposes docker logs command over http.
+Basically this is a wrapper for the docker remote API to implement only the /logs endpoint.
+.link https://docs.docker.com/engine/reference/api/docker_remote_api_v1.22/#get-container-logs Documentation
+.link http://10.4.1.247:7000/containers/c4c81763a26dca8f2016c0ec3e9c5346792f3474fe7634037d5c19efc8502457/logs?stderr=1&stdout=1&tail=20&timestamps=1 Example
+
+* Better approach ELK/EHK
+
+*E* lasticsearch
+*H* eka instead of Logstash
+*K* ibana
+
+* Elasticsearch
+
+Elasticsearch is a search server based on Lucene. It provides a distributed, multitenant-capable full-text search engine with an HTTP web interface and schema-free JSON documents. Elasticsearch is developed in Java and is released as open source under the terms of the Apache License. Elasticsearch is the most popular enterprise search engine followed by Apache Solr, also based on Lucene
+
+MeteoGroup is utilizing Amazon Elasticsearch Service to store the logs which are produced by all Docker servers running in AWS Virtual Datacenter.
+
+* Heka
+Heka is an open source stream processing software system developed by Mozilla. Heka is a “Swiss Army Knife” type tool for data processing, useful for a wide variety of different tasks, such as:
+
+- Loading and parsing log files from a file system.
+- Accepting statsd type metrics data for aggregation and forwarding to upstream time series data stores such as graphite or InfluxDB.
+- Launching external processes to gather operational data from the local system.
+- Performing real time analysis, graphing, and anomaly detection on any data flowing through the Heka pipeline.
+- Shipping data from one location to another via the use of an external transport (such as AMQP) or directly (via TCP).
+- Delivering processed data to one or more persistent data stores.
+
+* Heka Message Pipeline
+
+- Input ( Docker Log input )
+- Splitter ( - )
+- Decoder ( Self written Sandbox Decoder )
+- Filter ( - )
+- Encoder ( ElasticSearch Logstash V0 Encoder )
+- Output ( ElasticSearch Output )
+
+This pipeline is running on all docker servers in AWS datacenter.
+
+* Kibana
+
+Kibana is an open source data visualization plugin for Elasticsearch. It provides visualization capabilities on top of the content indexed on an Elasticsearch cluster. Users can create bar, line and scatter plots, or pie charts and maps on top of large volumes of data
+This service is running on top of AWS Elasticsearch Service and ist restricted to special IP addresses.
+
+.link https://search-awslogs-dyx5fxsepfnqvryggdba7p2x2y.eu-west-1.es.amazonaws.com/_plugin/kibana/#/discover?_a=(columns:!('@message'),filters:!(),index:'logstash-*',interval:auto,query:(query_string:(analyze_wildcard:!t,query:w2s)),sort:!('@timestamp',desc))&_g=(refreshInterval:(display:Off,section:0,value:0),time:(from:now-4h,mode:quick,to:now)) Link
